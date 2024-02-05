@@ -1,5 +1,5 @@
-import React from 'react'
 import { nanoid } from 'nanoid'
+
 import css from './PhonebookForm.module.css'
 
 export const PhonebookForm = ({addUser}) => {

@@ -1,19 +1,18 @@
-import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 import { PhonebookForm } from "./Form.jsx/PhonebookForm";
-import {Contacts} from "./Contacts/Contacts";
+import { Contacts } from "./Contacts/Contacts";
 import { Filter } from "./Filter/Filter";
+import { addContact, deleteContact, filterContacts } from "../redux/contacts/contactsSlice";
 
 import css from './App.module.css';
 
 export const App = () => {
 
-  const [contacts, setContacts] = useState(JSON.parse(localStorage.getItem('phonebook')) || [])
-  const [filter, setFilter] = useState('')
+  const contacts = useSelector(state => state.contactsData.contacts)
+  const filter = useSelector(state => state.contactsData.filter)
   
-  useEffect(() => { 
-      localStorage.setItem("phonebook", JSON.stringify(contacts))
-  }, [contacts])
+  const dispatch = useDispatch();
 
   const addUser = (formData => {
     const isDuplicate = contacts.some(contact => contact.name === formData.name)
@@ -22,18 +21,16 @@ export const App = () => {
       alert(`${formData.name} is already in contacts.`)
       return
     }
-
-    setContacts(prevContacts => [...prevContacts, formData])
+   
+    dispatch(addContact(formData));
   })
 
-  const handleSearch = (searchData => setFilter(searchData))
+  const handleSearch = searchData => dispatch(filterContacts(searchData));
 
-  const handleDelete = (name) => {
-    setContacts(contacts.filter(contact => contact.name !== name))
-  }
+  const handleDelete = name => dispatch(deleteContact(name))
 
   const filteredContacts = contacts.filter(contact => {
-    return contact.name.toLowerCase().includes(filter.toLowerCase())
+    return contact.name.toLowerCase().includes(filter.toLowerCase()) || contact.number.includes(filter)
   })
 
   return (
